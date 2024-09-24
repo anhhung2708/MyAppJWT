@@ -1,7 +1,6 @@
 package com.example.myappjwt.service.impl;
 
 import org.slf4j.Logger;
-
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +29,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     public String AuthenticateAndGenerateToken(String username, String password) {
         User user = userMapper.selectByUsername(username);
+        logger.info("Authenticating user: {}", username);
         if (user == null) {
+        	logger.warn("User not found: {}", username);
             throw new RuntimeException("User not found");
         }
         
@@ -43,7 +44,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         		
         	} catch (Exception e) {
         		logger.error("Authentication failed: {}", e.getMessage(), e);
-        		throw new RuntimeException("Invalid username or password");
+        		throw new RuntimeException("Invalid username or password in serviceimpl");
         	}
         }
         

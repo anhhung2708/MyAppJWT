@@ -5,11 +5,12 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.myappjwt.filter.JwtAuthenticationFilter;
+import com.example.myappjwt.security.JwtAccessDeniedHandler;
+import com.example.myappjwt.security.JwtAuthenticationEntryPoint;
 import com.example.myappjwt.service.impl.CustomUserDetailsService;
 
 @Configuration
@@ -28,6 +31,25 @@ public class SecurityConfig {
 
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
+	
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	
+	@Autowired
+	private JwtAccessDeniedHandler jwtAccessDeniedHandler;
+	
+	@Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+	
+	@Bean
+	AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+	    AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+	    authenticationManagerBuilder.userDetailsService(customUserDetailsService);
+	    
+	    return authenticationManagerBuilder.build();
+	}
 	
 	@Bean
     CorsConfigurationSource corsSource(){
@@ -43,44 +65,31 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, CorsConfigurationSource corsSource) throws Exception {
-    	return http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsSource))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(request -> {
-                    request.requestMatchers("/user/**").permitAll();
-                    request.requestMatchers(HttpMethod.GET,"/user/**").permitAll();
-                    request.requestMatchers(HttpMethod.POST,"/user/**").permitAll();
+//    	return http
+//                .csrf(csrf -> csrf.disable())
+//                .cors(cors -> cors.configurationSource(corsSource))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(request -> {
+//                    request.requestMatchers("/user/**").permitAll();
+//                    request.requestMatchers(HttpMethod.GET,"/user/**").permitAll();
+//                    request.requestMatchers(HttpMethod.POST,"/user/**").permitAll();
 //                    request.requestMatchers("/product").hasRole("ADMIN");
-                    request.anyRequest().authenticated();
-                })
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-//    	http
-//        .csrf(AbstractHttpConfigurer::disable)
-//        .authorizeHttpRequests(auth -> 
-//            auth.requestMatchers("/user/**").permitAll()
-//                .anyRequest().authenticated())
-//        .exceptionHandling(exception -> 
-//            exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-//        .sessionManagement(session -> 
-//            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//        .httpBasic(Customizer.withDefaults());
-//
-//    	http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//    
-//    	return http.build();
-    }
+//                    request.anyRequest().authenticated();
+//                })
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .build();
+    	http
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**").permitAll().anyRequest().authenticated())
+        .exceptionHandling(exception -> {
+        	exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+    		exception.accessDeniedHandler(jwtAccessDeniedHandler);
+        })
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .httpBasic(Customizer.withDefaults());
     	
-	@Bean
-	AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-	    AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-	    authenticationManagerBuilder.userDetailsService(customUserDetailsService);
-	    return authenticationManagerBuilder.build();
-	}
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    	http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    
+    	return http.build();
     }
 }
