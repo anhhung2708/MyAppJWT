@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+  
+<generatorConfiguration>
+
+    <context id="PostgresTables" targetRuntime="MyBatis3">
+
+        <!-- JDBC Connection Configuration -->
+        <jdbcConnection driverClass="org.postgresql.Driver"
+                        connectionURL="jdbc:postgresql://10.1.1.102:5432/production_test"
+                        userId="dev_3"
+                        password="dev3_0809@saigonbpo">
+        </jdbcConnection>
+
+        <!-- Java Model Generator Configuration -->
+        <javaModelGenerator targetPackage="com.example.myappjwt.model"
+                            targetProject="myappjwt/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+            <property name="enableExample" value="true"/>
+        </javaModelGenerator>
+
+        <!-- SQL Map Generator Configuration -->
+        <sqlMapGenerator targetPackage="com.example.myappjwt.mapper"
+                         targetProject="myappjwt/src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- Java Client Generator Configuration -->
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.example.myappjwt.mapper"
+                             targetProject="myappjwt/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!-- Table Configuration -->
+        <table schema="db_hungha2" tableName="auth_user"
+               domainObjectName="User"
+               enableCountByExample="true"
+               enableUpdateByExample="true"
+               enableDeleteByExample="true"
+               enableSelectByExample="true"
+               selectByExampleQueryId="true">
+        </table>
+
+    </context>
+</generatorConfiguration>
