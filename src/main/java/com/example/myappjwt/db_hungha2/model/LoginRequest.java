@@ -1,4 +1,4 @@
-package com.example.myappjwt.model;
+package com.example.myappjwt.db_hungha2.model;
 
 public class LoginRequest {
 

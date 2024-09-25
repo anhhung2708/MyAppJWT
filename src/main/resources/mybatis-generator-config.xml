@@ -14,25 +14,25 @@
                         password="dev3_0809@saigonbpo">
         </jdbcConnection>
 
-        <!-- Java Model Generator Configuration -->
-        <javaModelGenerator targetPackage="com.example.myappjwt.model"
+        <!-- Model -->
+        <javaModelGenerator targetPackage="com.example.myappjwt.db_hungha2.model"
                             targetProject="myappjwt/src/main/java">
-            <property name="enableSubPackages" value="true"/>
+            <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
             <property name="enableExample" value="true"/>
         </javaModelGenerator>
 
-        <!-- SQL Map Generator Configuration -->
-        <sqlMapGenerator targetPackage="com.example.myappjwt.mapper"
+        <!-- SQL/Repository -->
+        <sqlMapGenerator targetPackage="com.example.myappjwt.db_hungha2.mapper"
                          targetProject="myappjwt/src/main/resources">
-            <property name="enableSubPackages" value="true"/>
+            <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
 
-        <!-- Java Client Generator Configuration -->
+        <!-- Mapper to SQL -->
         <javaClientGenerator type="XMLMAPPER"
-                             targetPackage="com.example.myappjwt.mapper"
+                             targetPackage="com.example.myappjwt.db_hungha2.mapper"
                              targetProject="myappjwt/src/main/java">
-            <property name="enableSubPackages" value="true"/>
+            <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
         <!-- Table Configuration -->
@@ -42,8 +42,7 @@
                enableUpdateByExample="true"
                enableDeleteByExample="true"
                enableSelectByExample="true"
-               selectByExampleQueryId="true">
-        </table>
+               selectByExampleQueryId="true"></table>
 
     </context>
 </generatorConfiguration>
